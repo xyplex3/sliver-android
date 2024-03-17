@@ -64,6 +64,9 @@ var (
 				"amd64": "/opt/osxcross/target/bin/o64-clang",
 				"arm64": "/opt/osxcross/target/bin/aarch64-apple-darwin20.2-clang",
 			},
+			"android": {
+				"aarch64": "/opt/arm/bin/aarch64-linux-android-clang",
+			},
 		},
 		"darwin": {
 			"windows": {
@@ -85,6 +88,7 @@ var (
 		"linux/amd64":   true,
 		"windows/386":   true,
 		"windows/amd64": true,
+		"android/aarch64": true,
 	}
 )
 
