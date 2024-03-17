@@ -13,15 +13,15 @@ FROM --platform=linux/amd64 golang:1.22.1 as base
 
 ### Base packages
 RUN apt-get update --fix-missing && apt-get -y install \
-    git build-essential zlib1g zlib1g-dev wget zip unzip
+    git build-essential zlib1g zlib1g-dev wget zip unzip 
 
 ### Add sliver user
 RUN groupadd -g 999 sliver && useradd -r -u 999 -g sliver sliver
 RUN mkdir -p /home/sliver/ && chown -R sliver:sliver /home/sliver
 
 ### Build sliver:
-WORKDIR /go/src/github.com/bishopfox/sliver
-ADD . /go/src/github.com/bishopfox/sliver/
+WORKDIR /go/src/github.com/xyplex3/sliver-android
+ADD . /go/src/github.com/xyplex3/sliver-android/
 RUN make clean-all 
 RUN make 
 RUN cp -vv sliver-server /opt/sliver-server 
@@ -57,14 +57,19 @@ RUN apt-get update --fix-missing \
     curl libapr1 libaprutil1 libsvn1 \
     libpcap-dev libsqlite3-dev libgmp3-dev \
     mingw-w64 binutils-mingw-w64 g++-mingw-w64 \
-    nasm gcc-multilib
+    nasm gcc-multilib android-tools-adb android-tools-fastboot
 
 ### Install MSF for stager generation
 RUN curl https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/templates/metasploit-framework-wrappers/msfupdate.erb > msfinstall \
     && chmod 755 msfinstall \
     && ./msfinstall \
     && mkdir -p ~/.msf4/ \
-    && touch ~/.msf4/initial_setup_complete 
+    && touch ~/.msf4/initial_setup_complete
+
+### Install Android compilers
+RUN curl https://dl.google.com/android/repository/android-ndk-r26c-linux.zip > android-ndk-r26c-linux.zip \
+    && unzip android-ndk-r26c-linux.zip -d /tmp \
+    && /tmp/android-ndk-r26c/build/tools/make_standalone_toolchain.py --arch arm64 --install-dir /opt/arm
 
 ### Cleanup unneeded packages
 RUN apt-get remove -y curl gnupg \
